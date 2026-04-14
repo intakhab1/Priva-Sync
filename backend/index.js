@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./db");
 const authRoutes = require("./routes/auth");
+const chatRoutes = require("./routes/chat");
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 
 //routes
 app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
