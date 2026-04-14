@@ -1,10 +1,10 @@
 import React from "react";
+import Login from "./Login";
 
-function App() {
-  return (
+function App(){
+  return(
     <div>
-      <h1>Priva-Sync Chatbot</h1>
-      <p>App is running!</p>
+      <Login />
     </div>
   );
 }
