@@ -1,10 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
 import Login from "./Login";
+import Chat from "./Chat";
 
 function App(){
+  const [isLoggedIn, setIsLoggedIn]= useState(false);
+
   return(
     <div>
-      <Login />
+      {isLoggedIn ? <Chat /> : <Login onLogin={()=> setIsLoggedIn(true)} />}
     </div>
   );
 }

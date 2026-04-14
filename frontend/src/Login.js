@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "./Login.css";
 
-function Login(){
+function Login({onLogin}){
   const [email, setEmail]= useState("");
   const [password, setPassword]= useState("");
   const [message, setMessage]= useState("");
@@ -20,6 +20,7 @@ function Login(){
         //save token
         localStorage.setItem("token", data.token);
         setMessage("Login successful!");
+        onLogin();
       }else{
         setMessage(data.message || "Login failed");
       }
