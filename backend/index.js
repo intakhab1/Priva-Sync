@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./db");
+const authRoutes = require("./routes/auth");
 
 //load env variables
 dotenv.config();
@@ -20,6 +21,9 @@ connectDB();
 app.get("/", (req, res) => {
   res.json({ message: "Backend server is running!" });
 });
+
+//routes
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
