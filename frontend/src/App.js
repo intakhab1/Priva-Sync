@@ -1,6 +1,5 @@
 import React from "react";
 
-// main app component
 function App() {
   return (
     <div>

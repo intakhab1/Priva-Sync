@@ -4,15 +4,14 @@ const dotenv = require("dotenv");
 const connectDB = require("./db");
 const authRoutes = require("./routes/auth");
 
-//load env variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT= process.env.PORT || 5000;
 
 //middleware
 app.use(cors());
-app.use(express.json()); //to parse json body
+app.use(express.json());
 
 //connect to database
 connectDB();
