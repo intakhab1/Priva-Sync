@@ -6,11 +6,27 @@ function Login(){
   const [password, setPassword]= useState("");
   const [message, setMessage]= useState("");
 
-  const handleLogin= (e)=>{
+  const handleLogin= async (e)=>{
     e.preventDefault();
-    //will connect to backend later
-    console.log("Login clicked", email, password);
-    setMessage("Login button clicked!");
+    try{
+      const res= await fetch("http://localhost:5000/api/auth/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({email, password})
+      });
+      const data= await res.json();
+
+      if(res.ok){
+        //save token
+        localStorage.setItem("token", data.token);
+        setMessage("Login successful!");
+      }else{
+        setMessage(data.message || "Login failed");
+      }
+    }catch(error){
+      console.log(error);
+      setMessage("Server error");
+    }
   };
 
   return(
