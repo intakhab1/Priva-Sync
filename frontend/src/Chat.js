@@ -26,7 +26,7 @@ function Chat(){
       //if no token just return
       if(!token) return;
 
-      const res= await fetch("http://localhost:5000/api/chat/history",{
+      const res= await fetch("http://localhost:5001/api/chat/history",{
         headers:{
           "Authorization": "Bearer " + token
         }
@@ -66,7 +66,7 @@ function Chat(){
     try{
       const token= localStorage.getItem("token");
 
-      const res= await fetch("http://localhost:5000/api/chat",{
+      const res= await fetch("http://localhost:5001/api/chat",{
         method:"POST",
         headers:{
           "Content-Type":"application/json",
