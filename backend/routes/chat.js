@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth= require("../middleware/auth");
 const {GoogleGenerativeAI}= require("@google/generative-ai");
+const Message= require("../models/Message");
 
 const genAI= new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -18,6 +19,14 @@ router.post("/", auth, async (req, res)=>{
     const model= genAI.getGenerativeModel({model:"gemini-1.5-flash"});
     const result= await model.generateContent(message);
     const reply = result.response.text();
+
+    //save chat to db
+    const newMessage= new Message({
+      userId: req.userId,
+      userMessage: message,
+      botReply: reply
+    });
+    await newMessage.save();
 
     res.status(200).json({reply});
   }catch(error){
