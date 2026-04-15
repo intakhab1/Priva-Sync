@@ -4,16 +4,39 @@ import "./Chat.css";
 function Chat(){
   const [input, setInput]= useState("");
   const [messages, setMessages]= useState([]);
+  const [loading, setLoading]= useState(false);
 
-  const handleSend= (e)=>{
+  const handleSend= async (e)=>{
     e.preventDefault();
     if(!input.trim()) return;
 
-    //add user message to chat
-    setMessages([...messages, {text: input, sender:"user"}]);
+    const userMessage= {text: input, sender:"user"};
+    setMessages(prev=> [...prev, userMessage]);
     setInput("");
+    setLoading(true);
 
-    //will connect to backend later
+    try{
+      const token= localStorage.getItem("token");
+
+      const res= await fetch("http://localhost:5000/api/chat",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({message: input})
+      });
+
+      const data= await res.json();
+
+      const botMessage= {text: data.reply, sender:"bot"};
+      setMessages(prev=> [...prev, botMessage]);
+    }catch(error){
+      console.log(error);
+      setMessages(prev=> [...prev, {text:"Error getting reply", sender:"bot"}]);
+    }
+
+    setLoading(false);
   };
 
   return(
@@ -25,6 +48,7 @@ function Chat(){
             <p>{msg.text}</p>
           </div>
         ))}
+        {loading && <p className="loading">Bot is typing...</p>}
       </div>
       <form onSubmit={handleSend} className="chat-input">
         <input
