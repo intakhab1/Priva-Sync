@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
+const auth= require("../middleware/auth");
+const {GoogleGenerativeAI}= require("@google/generative-ai");
+
+const genAI= new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 //chat route
 router.post("/", auth, async (req, res)=>{
@@ -11,8 +14,10 @@ router.post("/", auth, async (req, res)=>{
       return res.status(400).json({message:"Message is required"});
     }
 
-    //for now just echoing back(will add AI later)
-    const reply= "You said: " + message;
+    //gemini api
+    const model= genAI.getGenerativeModel({model:"gemini-1.5-flash"});
+    const result= await model.generateContent(message);
+    const reply = result.response.text();
 
     res.status(200).json({reply});
   }catch(error){
