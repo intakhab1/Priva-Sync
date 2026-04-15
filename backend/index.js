@@ -14,7 +14,6 @@ const PORT= process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-//connect to database
 connectDB();
 
 //test route

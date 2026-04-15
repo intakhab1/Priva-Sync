@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import "./Chat.css";
 
 function Chat(){
@@ -6,20 +6,38 @@ function Chat(){
   const [messages, setMessages]= useState([]);
   const [loading, setLoading]= useState(false);
 
+  //ref to scroll chat to bottom
+  const chatEndRef= useRef(null);
+
   //load previous chats when component loads
   useEffect(()=>{
     loadHistory();
   }, []);
 
+  //scroll to bottom whenever messages change
+  useEffect(()=>{
+    chatEndRef.current?.scrollIntoView({behavior:"smooth"});
+  }, [messages, loading]);
+
   const loadHistory= async ()=>{
     try{
       const token= localStorage.getItem("token");
+
+      //if no token just return
+      if(!token) return;
 
       const res= await fetch("http://localhost:5000/api/chat/history",{
         headers:{
           "Authorization": "Bearer " + token
         }
       });
+
+      //if token is expired or invalid
+      if(res.status === 401){
+        localStorage.removeItem("token");
+        window.location.reload();
+        return;
+      }
 
       const data= await res.json();
 
@@ -57,6 +75,13 @@ function Chat(){
         body: JSON.stringify({message: input})
       });
 
+      //handle expired token
+      if(res.status === 401){
+        localStorage.removeItem("token");
+        window.location.reload();
+        return;
+      }
+
       const data= await res.json();
 
       const botMessage= {text: data.reply, sender:"bot"};
@@ -71,14 +96,19 @@ function Chat(){
 
   return(
     <div className="chat-container">
-      <h2>Chat</h2>
+      <h2>Priva-Sync Chat</h2>
       <div className="chat-box">
+        {messages.length === 0 && (
+          <p className="empty-msg">No messages yet. Say hello!</p>
+        )}
         {messages.map((msg, index)=>(
           <div key={index} className={`chat-message ${msg.sender}`}>
             <p>{msg.text}</p>
           </div>
         ))}
         {loading && <p className="loading">Bot is typing...</p>}
+        {/*scroll anchor*/}
+        <div ref={chatEndRef}></div>
       </div>
       <form onSubmit={handleSend} className="chat-input">
         <input
@@ -87,7 +117,7 @@ function Chat(){
           value={input}
           onChange={(e)=> setInput(e.target.value)}
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={loading}>Send</button>
       </form>
     </div>
   );
