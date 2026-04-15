@@ -35,4 +35,15 @@ router.post("/", auth, async (req, res)=>{
   }
 });
 
+//get chat history
+router.get("/history", auth, async (req, res)=>{
+  try{
+    const chats= await Message.find({userId: req.userId}).sort({createdAt: 1});
+    res.status(200).json({chats});
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message:"Something went wrong"});
+  }
+});
+
 module.exports = router;

@@ -1,10 +1,40 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import "./Chat.css";
 
 function Chat(){
   const [input, setInput]= useState("");
   const [messages, setMessages]= useState([]);
   const [loading, setLoading]= useState(false);
+
+  //load previous chats when component loads
+  useEffect(()=>{
+    loadHistory();
+  }, []);
+
+  const loadHistory= async ()=>{
+    try{
+      const token= localStorage.getItem("token");
+
+      const res= await fetch("http://localhost:5000/api/chat/history",{
+        headers:{
+          "Authorization": "Bearer " + token
+        }
+      });
+
+      const data= await res.json();
+
+      //convert old chats to message format
+      const oldMessages= [];
+      data.chats.forEach(chat=>{
+        oldMessages.push({text: chat.userMessage, sender:"user"});
+        oldMessages.push({text: chat.botReply, sender:"bot"});
+      });
+
+      setMessages(oldMessages);
+    }catch(error){
+      console.log("could not load history", error);
+    }
+  };
 
   const handleSend= async (e)=>{
     e.preventDefault();
